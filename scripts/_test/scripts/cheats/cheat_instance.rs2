@@ -1,0 +1,155 @@
+// Test script for instance region operations
+
+/**
+ * Populate an instance zone with a map square block.
+ * @param source_coord The source map square (e.g., 0_42_143_0_0)
+ * @param level The floor level (0-3)
+ * @param zone_x The zone x offset within the instance
+ * @param zone_z The zone z offset within the instance
+ */
+[proc,region_set_block](coord $source_coord, int $level, int $zones_x, int $zones_z)
+def_int $x = 0;
+while ($x < $zones_x) {
+    def_int $z = 0;
+    while ($z < $zones_z) {
+        def_coord $source_zone = movecoord($source_coord, calc($x * 8), 0, calc($z * 8));
+        region_set($level, $x, $z, $source_zone, 0);
+        $z = add($z, 1);
+    }
+    $x = add($x, 1);
+}
+
+[proc,region_set_block_rotated](coord $source_coord, int $level, int $zones_x, int $zones_z, int $rotation)
+def_int $x = 0;
+while ($x < $zones_x) {
+    def_int $z = 0;
+    while ($z < $zones_z) {
+        def_int $source_x = $x;
+        def_int $source_z = $z;
+
+        if ($rotation = 1) {
+            $source_x = $z;
+            $source_z = calc($zones_z - 1 - $x);
+        } else if ($rotation = 2) {
+            $source_x = calc($zones_x - 1 - $x);
+            $source_z = calc($zones_z - 1 - $z);
+        } else if ($rotation = 3) {
+            $source_x = calc($zones_x - 1 - $z);
+            $source_z = $x;
+        }
+
+        def_coord $source_zone = movecoord($source_coord, calc($source_x * 8), 0, calc($source_z * 8));
+        region_set($level, $x, $z, $source_zone, $rotation);
+        $z = add($z, 1);
+    }
+    $x = add($x, 1);
+}
+
+
+[debugproc,instance_create_and_tele]
+if_close;
+if (p_finduid(uid) = false) { @please_finish; return; }
+
+// Create a 1x1 instance with 1 floor
+def_coord $instance_sw = region_create(1, 1, 1);
+mes("Created instance");
+
+// Get the southwest tile of the instance
+def_coord $tele_coord = region_getcoord(0, 0, 0);
+mes("Teleporting to instance...");
+
+// Teleport the player to the instance
+p_teleport($tele_coord);
+
+[debugproc,instance2]
+if_close;
+if (p_finduid(uid) = false) { @please_finish; return; }
+
+// Create a 1x1 instance with 1 floor
+def_coord $instance_sw = region_create(1, 1, 1);
+mes("Created instance");
+
+// Populate zone 0,0 of the instance with a copy of Lumby (0_50_50)
+// region_set takes: level, x (in zones), z (in zones), source_coord, rotation
+region_set(0, 0, 0, 0_50_50_0_0, 0);
+mes("Populated instance zone with Lumby");
+
+// Get a coord slightly offset so the player doesn't land on collision
+def_coord $tele_coord = region_getcoord(0, 4, 4);
+mes("Teleporting to instance...");
+
+// Teleport the player to the instance
+p_teleport($tele_coord);
+
+[debugproc,instance_find_and_tele]
+if_close;
+if (p_finduid(uid) = false) { @please_finish; return; }
+
+// First create an instance
+def_coord $instance_sw = region_create(1, 1, 1);
+region_set(0, 0, 0, 0_50_50_0_0, 0);
+mes("Created and populated instance");
+
+// Now test finding that instance by a coord in it
+def_coord $test_coord = region_getcoord(0, 5, 5);
+if (region_findbycoord($test_coord) = true) {
+    mes("Found instance! Teleporting to it");
+    def_coord $tele_coord = region_getcoord(0, 4, 4);
+    p_teleport($tele_coord);
+} else {
+    mes("Failed to find instance");
+}
+
+[debugproc,instance3]
+if_close;
+if (p_finduid(uid) = false) { @please_finish; return; }
+
+// Create an 8x8-zone instance with 3 floors.
+def_coord $instance_sw = region_create(3, 8, 8);
+mes("Created 8x8 instance with 3 floors");
+
+// Copy the full Lumbridge mapsquare block onto each floor.
+~region_set_block(0_50_50_0_0, 0, 8, 8);
+~region_set_block(1_50_50_0_0, 1, 8, 8);
+~region_set_block(2_50_50_0_0, 2, 8, 8);
+region_setexitcoord(0_50_53_16_16);
+mes("Copied 8x8 Lumbridge blocks to floors 0-2");
+
+// Spawn a few sheep around the landing area on floor 0.
+def_coord $sheep_center = region_getcoord(0, 8, 8);
+npc_add(movecoord($sheep_center, -2, 0, -1), sheepunsheered, 500);
+npc_add(movecoord($sheep_center, 2, 0, -1), sheepunsheered2, 500);
+npc_add(movecoord($sheep_center, -1, 0, 2), sheepunsheered3, 500);
+npc_add(movecoord($sheep_center, 2, 0, 2), sheepunsheered, 500);
+mes("Spawned sheep around the instance landing area");
+
+// Teleport to a safe-ish tile near the center of floor 0.
+def_coord $tele_coord = region_getcoord(0, 8, 8);
+mes("Teleporting to instance...");
+p_teleport($tele_coord);
+
+[debugproc,instance4]
+if_close;
+if (p_finduid(uid) = false) { @please_finish; return; }
+
+// Create a 2x1-zone instance on floor 0 so chunk 1,0 is valid.
+def_coord $instance_sw = region_create(1, 2, 1);
+
+// Copy the southwest Lumbridge zone into destination chunk 0,0.
+region_set(0, 0, 0, 0_50_50_0_0, 0);
+mes("Created 2x1 instance with Lumbridge southwest in chunk 0,0");
+
+// Teleport inside that single copied zone.
+def_coord $tele_coord = region_getcoord(0, 4, 4);
+mes("Teleporting to instance...");
+p_teleport($tele_coord);
+
+[debugproc,instance5]
+// Set active region from the caller's current coordinate.
+if (region_findbycoord(coord) = false) {
+    return;
+}
+
+// Copy the zone one chunk east of Lumbridge southwest into destination chunk 1,0.
+def_coord $lumby_sw_east = movecoord(0_50_50_0_0, 8, 0, 0);
+region_set(0, 1, 0, $lumby_sw_east, 0);

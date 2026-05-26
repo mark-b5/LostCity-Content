@@ -78,6 +78,34 @@
 [command,map_findsquare](coord $coord, int $minradius, int $maxradius, int $type)(coord)
 // info: Returns true if the map tile at $coord is in a multi-way combat area
 [command,map_multiway](coord $coord)(boolean)
+// info: Allocate a new instance region and return its southwest coord
+[command,region_create](int $levels, int $zones_east, int $zones_north)(coord)
+// info: Allocate a new instance region on the secondary region pointer and return its southwest coord
+[command,.region_create](int $levels, int $zones_east, int $zones_north)(coord)
+// info: Copy a source zone into the active instance at ($dest_level, $dest_x, $dest_z) with $rotation
+[command,region_set](int $dest_level, int $dest_x, int $dest_z, coord $source, int $rotation)
+// info: Copy a source zone into the secondary active instance at ($dest_level, $dest_x, $dest_z) with $rotation
+[command,.region_set](int $dest_level, int $dest_x, int $dest_z, coord $source, int $rotation)
+// info: Return the coord at the active region southwest tile plus ($level, $x, $z)
+[command,region_getcoord](int $level, int $x, int $z)(coord)
+// info: Return the coord at the secondary active region southwest tile plus ($level, $x, $z)
+[command,.region_getcoord](int $level, int $x, int $z)(coord)
+// info: Find the instance containing the given coord, set it as active region, and return true if found
+[command,region_findbycoord](coord $coord)(boolean)
+// info: Find the instance containing the given coord, set it as secondary active region, and return true if found
+[command,.region_findbycoord](coord $coord)(boolean)
+// info: Return the uid of the active region
+[command,region_uid]()(int)
+// info: Return the uid of the secondary active region
+[command,.region_uid]()(int)
+// info: Find the instance by uid, set it as active region, and return true if found
+[command,region_findbyuid](int $uid)(boolean)
+// info: Find the instance by uid, set it as secondary active region, and return true if found
+[command,.region_findbyuid](int $uid)(boolean)
+// info: Set the player's stored instance exit coord used for login-time fallback from instances
+[command,region_setexitcoord](coord $exit_coord)
+// info: Set the secondary player's stored instance exit coord used for login-time fallback from instances
+[command,.region_setexitcoord](coord $exit_coord)
 
 // Player ops (2000-2499)
 // info: Get access to $player if they are in the world
