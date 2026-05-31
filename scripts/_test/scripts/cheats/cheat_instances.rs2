@@ -1,0 +1,26 @@
+// Lumbridge region 50,50: 8x8 zones, 3 levels (0=ground, 1=first, 2=second floor).
+// Uses the ::home spawn point (0_50_50_22_22) as the in-instance teleport destination.
+[debugproc,instance_lumbridge]
+if_close;
+if (p_finduid(uid) = false) { @please_finish; return; }
+def_coord $base = 0_50_50_0_0;
+def_coord $sw = region_create(3, 8, 8);
+def_int $floor = 0;
+def_int $e = 0;
+def_int $n = 0;
+while ($floor < 3) {
+    $e = 0;
+    while ($e < 8) {
+        $n = 0;
+        while ($n < 8) {
+            region_set($floor, $e, $n, movecoord($base, calc($e * 8), $floor, calc($n * 8)), 0);
+            $n = add($n, 1);
+        }
+        $e = add($e, 1);
+    }
+    $floor = add($floor, 1);
+}
+region_setexitcoord(0_50_50_22_22);
+def_coord $spawn = region_getcoord(0, 22, 22);
+p_telejump($spawn);
+mes("Instance created. UID: <tostring(region_uid)>");

@@ -80,6 +80,28 @@
 [command,map_multiway](coord $coord)(boolean)
 [command,midi_length](midi $track)(int)
 
+// Instance / region ops (1023-1029)
+// info: Allocate a new instance of $levels floors, $zones_east x $zones_north zones. Sets active_region to the SW corner.
+[command,region_create](int $levels, int $zones_east, int $zones_north)(coord)
+// info: Allocate a new instance into the secondary active_region pointer.
+[command,.region_create](int $levels, int $zones_east, int $zones_north)(coord)
+// info: Copy one source zone into the active instance at zone offset ($dest_east, $dest_north) on floor $dest_level, with $rotation (0=none,1=90,2=180,3=270).
+[command,region_set](int $dest_level, int $dest_east, int $dest_north, coord $source, int $rotation)
+// info: Get a coord at tile offset ($x_offset, $z_offset) from the SW corner of the active instance on level $level_offset.
+[command,region_getcoord](int $level_offset, int $x_offset, int $z_offset)(coord)
+// info: Set the exit coord on the active instance (teleport destination when leaving the instance).
+[command,region_setexitcoord](coord $coord)
+// info: Get the UID of the active instance.
+[command,region_uid]()(int)
+// info: Find instance containing $coord and set it as active_region. Returns true if found.
+[command,region_findbycoord](coord $coord)(boolean)
+// info: Find instance containing $coord and set it as secondary active_region. Returns true if found.
+[command,.region_findbycoord](coord $coord)(boolean)
+// info: Find instance by $uid and set it as active_region. Returns true if found.
+[command,region_findbyuid](int $uid)(boolean)
+// info: Find instance by $uid and set it as secondary active_region. Returns true if found.
+[command,.region_findbyuid](int $uid)(boolean)
+
 // Player ops (2000-2499)
 // info: Get access to $player if they are in the world
 [command,finduid](player_uid $player)(boolean)
