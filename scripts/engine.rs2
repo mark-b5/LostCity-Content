@@ -533,6 +533,10 @@
 [command,npc_coord]()(coord)
 // info: Get the secondary npc's coord
 [command,.npc_coord]()(coord)
+// info: Get the current npc's spawn coord
+[command,npc_spawncoord]()(coord)
+// info: Get the secondary npc's spawn coord
+[command,.npc_spawncoord]()(coord)
 // info: Delete the current npc
 [command,npc_del]
 // info: Delete the secondary npc

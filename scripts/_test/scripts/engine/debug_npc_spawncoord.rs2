@@ -1,0 +1,20 @@
+[debugproc,npc_spawncoord](npc $npc)
+if ($npc = null) {
+    @debugusage("::npc_spawncoord (name)", "::npc_spawncoord man2", "::npc_spawncoord chicken");
+    return;
+}
+
+if (npc_find(coord, $npc, 10, 0) = false) {
+    mes("No NPC found");
+    return;
+}
+
+def_coord $spawn = npc_spawncoord;
+def_coord $now = npc_coord;
+mes("primary | spawn: <tostring(coordx($spawn))>,<tostring(coordz($spawn))>,<tostring(coordy($spawn))> - now: <tostring(coordx($now))>,<tostring(coordz($now))>,<tostring(coordy($now))>");
+
+// exercise the secondary (.) form against the same npc
+if (.npc_find(coord, $npc, 10, 0) = true) {
+    def_coord $spawn2 = .npc_spawncoord;
+    mes("secondary | spawn: <tostring(coordx($spawn2))>,<tostring(coordz($spawn2))>,<tostring(coordy($spawn2))>");
+}

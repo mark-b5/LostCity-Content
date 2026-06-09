@@ -1,0 +1,5 @@
+[debugproc,drop_cowhides]
+if (p_finduid(uid) = false) {
+    return;
+}
+obj_add(coord, cow_hide, 20, ^lootdrop_duration);
